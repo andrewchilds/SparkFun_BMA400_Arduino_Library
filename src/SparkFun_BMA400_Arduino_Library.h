@@ -67,8 +67,8 @@ class BMA400
         BMA400();
 
         // Sensor initialization, must specify communication interface
-        int8_t beginI2C(uint8_t address = BMA400_I2C_ADDRESS_DEFAULT, TwoWire& wirePort = Wire);
-        int8_t beginSPI(uint8_t csPin, uint32_t clockFrequency = 100000);
+        int8_t beginI2C(uint8_t address = BMA400_I2C_ADDRESS_DEFAULT, TwoWire& wirePort = Wire, bool skipReset = false);
+        int8_t beginSPI(uint8_t csPin, uint32_t clockFrequency = 100000, bool skipReset = false);
 
         // Power mode control
         int8_t setMode(uint8_t mode);
@@ -136,7 +136,7 @@ class BMA400
 
     private:
         // Sensor initialization, after communication interface has been selected
-        int8_t begin();
+        int8_t begin(bool skipReset = false);
 
         // When calling bma400_get_sensor_conf(), the BMA400_ACCEL category has
         // several unrelated parameters that all get set at once. These are

@@ -11,7 +11,7 @@ BMA400::BMA400()
 /// @param address I2C address of sensor
 /// @param wirePort I2C port to use for communication, defaults to Wire
 /// @return Error code. 0 means success, negative means failure
-int8_t BMA400::beginI2C(uint8_t address, TwoWire& wirePort)
+int8_t BMA400::beginI2C(uint8_t address, TwoWire& wirePort, bool skipReset)
 {
     // Check whether address is valid option
     if(address != BMA400_I2C_ADDRESS_DEFAULT && address != BMA400_I2C_ADDRESS_SECONDARY)
@@ -29,7 +29,7 @@ int8_t BMA400::beginI2C(uint8_t address, TwoWire& wirePort)
     interfaceData.interface = BMA400_I2C_INTF;
 
     // Initialize sensor
-    return begin();
+    return begin(skipReset);
 }
 
 /// @brief Begin communication with the sensor over SPI, initialize it, and set
@@ -37,7 +37,7 @@ int8_t BMA400::beginI2C(uint8_t address, TwoWire& wirePort)
 /// @param csPin Chip select pin of sensor
 /// @param clockFrequency SPI clock frequency
 /// @return Error code. 0 means success, negative means failure
-int8_t BMA400::beginSPI(uint8_t csPin, uint32_t clockFrequency)
+int8_t BMA400::beginSPI(uint8_t csPin, uint32_t clockFrequency, bool skipReset)
 {
     // Set up chip select pin
     interfaceData.spiCSPin = csPin;
@@ -52,13 +52,13 @@ int8_t BMA400::beginSPI(uint8_t csPin, uint32_t clockFrequency)
     interfaceData.interface = BMA400_SPI_INTF;
 
     // Initialize sensor
-    return begin();
+    return begin(skipReset);
 }
 
 /// @brief Checks whether sensor is connected, sends soft reset command,
 /// initializes sensor, then sets default config parameters
 /// @return Error code. 0 means success, negative means failure
-int8_t BMA400::begin()
+int8_t BMA400::begin(bool skipReset)
 {
     // Variable to track errors returned by API calls
     int8_t err = BMA400_OK;
@@ -70,8 +70,11 @@ int8_t BMA400::begin()
     sensor.intf_ptr = &interfaceData;
 
     // Reset the sensor
-    err = bma400_soft_reset(&sensor);
-    if(err != BMA400_OK) return err;
+    // skipReset allows for step counting to work during a MCU's deep sleep
+    if (skipReset != true) {
+        err = bma400_soft_reset(&sensor);
+        if(err != BMA400_OK) return err;
+    }
 
     // Initialize the sensor
     err = bma400_init(&sensor);
