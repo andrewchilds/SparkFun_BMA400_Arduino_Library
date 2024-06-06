@@ -10,6 +10,7 @@ BMA400::BMA400()
 /// default config parameters
 /// @param address I2C address of sensor
 /// @param wirePort I2C port to use for communication, defaults to Wire
+/// @param skipReset Whether to skip the soft reset command
 /// @return Error code. 0 means success, negative means failure
 int8_t BMA400::beginI2C(uint8_t address, TwoWire& wirePort, bool skipReset)
 {
@@ -36,6 +37,7 @@ int8_t BMA400::beginI2C(uint8_t address, TwoWire& wirePort, bool skipReset)
 /// default config parameters
 /// @param csPin Chip select pin of sensor
 /// @param clockFrequency SPI clock frequency
+/// @param skipReset Whether to skip the soft reset command
 /// @return Error code. 0 means success, negative means failure
 int8_t BMA400::beginSPI(uint8_t csPin, uint32_t clockFrequency, bool skipReset)
 {
@@ -57,6 +59,7 @@ int8_t BMA400::beginSPI(uint8_t csPin, uint32_t clockFrequency, bool skipReset)
 
 /// @brief Checks whether sensor is connected, sends soft reset command,
 /// initializes sensor, then sets default config parameters
+/// @param skipReset Whether to skip the soft reset command
 /// @return Error code. 0 means success, negative means failure
 int8_t BMA400::begin(bool skipReset)
 {
